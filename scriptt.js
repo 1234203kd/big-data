@@ -1,82 +1,80 @@
-// URL donde se encuentra el modelo y metadatos
+// CORRECCIÓN CLAVE: Usamos la ruta absoluta que funciona en tu GitHub Pages.
+// DEBES verificar que el nombre del repositorio 'big-data' y la carpeta 'mi modelo imagen'
+// coincidan EXACTAMENTE (mayúsculas/minúsculas) con tu repositorio.
 const modelURL = "/big-data/mi modelo imagen/model.json";
 const metadataURL = "/big-data/mi modelo imagen/metadata.json";
 
-// Variables globales
 let model, webcam, labelContainer, maxPredictions;
 
-// Anchura y altura deseadas para la webcam (debe coincidir con el entrenamiento del modelo)
-const flip = true; 
-const width = 400;
-const height = 400;
-
-// Función principal asíncrona para iniciar todo
 async function init() {
-    // Referencia al contenedor de la webcam y las etiquetas
     const webcamContainer = document.getElementById("webcam-container");
-    labelContainer = document.getElementById("label-container"); // Corregido: usa "label-container"
+    // Tu HTML (index.html) usa el ID 'label-container' para mostrar resultados
+    labelContainer = document.getElementById("label-container"); 
 
     try {
+        console.log("Intentando cargar modelo desde:", modelURL);
+        
         // Cargar el modelo
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
 
-        // Configurar la webcam
-        webcam = new tmImage.Webcam(width, height, flip); 
-        await webcam.setup(); // Solicita acceso a la cámara
+        const flip = true;
+        // La resolución es de 400x400 en tu CSS, así que la ajustamos aquí:
+        webcam = new tmImage.Webcam(400, 400, flip); 
+        await webcam.setup();
         await webcam.play();
-        
-        // Agregar el elemento de video de la webcam al contenedor
-        webcamContainer.appendChild(webcam.canvas);
-        
-        // Crea los elementos de texto iniciales para las clases
-        for (let i = 0; i < maxPredictions; i++) {
-            labelContainer.appendChild(document.createElement("div"));
-        }
-
-        // Iniciar el ciclo de predicción continua
         window.requestAnimationFrame(loop);
 
-    } catch (e) {
-        console.error("Error al cargar el modelo o la webcam:", e);
-        // Muestra un mensaje de error si no se pudo cargar el modelo o la cámara
-        if (labelContainer) {
-            labelContainer.innerHTML = "<h3>⚠️ Error: No se pudo cargar el modelo o la cámara.</h3><p>Asegúrate de dar permiso de cámara y que los archivos estén en la ubicación correcta.</p>";
+        // Limpiamos el contenedor (aunque solo deberíamos llamar a init una vez)
+        if (webcamContainer.hasChildNodes()) {
+            webcamContainer.innerHTML = "";
         }
+        webcamContainer.appendChild(webcam.canvas);
+        
+    } catch (e) {
+        console.error("Error crítico al iniciar:", e);
+        // Usamos el mensaje de error de tu interfaz original
+        labelContainer.innerHTML = `<h3>⚠️ Error: No se pudo cargar el modelo.</h3><p>Revisa que la carpeta "mi modelo imagen" exista en tu GitHub y contenga model.json</p>`;
     }
 }
 
-// Bucle de predicción continua
 async function loop() {
-    webcam.update(); // Captura el nuevo cuadro de la cámara
+    // Si la cámara falló en init, evitamos errores aquí
+    if (!webcam) return; 
+    webcam.update();
     await predict();
-    window.requestAnimationFrame(loop); // Pide el siguiente ciclo
+    window.requestAnimationFrame(loop);
 }
 
-// Función para hacer la predicción y actualizar la interfaz
 async function predict() {
-    // Predice usando la imagen actual de la webcam
+    if (!model) return;
+
     const prediction = await model.predict(webcam.canvas);
+    
+    // Tu código original usaba highestProb, el código de la webcam usa un bucle for (como la versión anterior).
+    // Usaremos el código más limpio de la versión anterior que te di (con las barras) para mostrar todos los resultados.
     
     // Limpia el contenedor de etiquetas
     labelContainer.innerHTML = ''; 
 
-    // Muestra los resultados de la predicción
+    // Muestra los resultados de la predicción (usando barras)
     for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2) * 100 + "%";
-        
-        // Crea una barra de progreso visual (opcional, pero recomendado)
         const barWidth = (prediction[i].probability * 100) + '%';
         const barHTML = `<div style="background-color: #4A90E2; height: 20px; width: ${barWidth}; margin-top: 5px;"></div>`;
 
         const predictionDiv = document.createElement("div");
         predictionDiv.className = 'prediction';
-        predictionDiv.innerHTML = `<strong>${prediction[i].className.replace(/_/g, ' ')}:</strong> ${(prediction[i].probability * 100).toFixed(2)}% ${barHTML}`;
+        const classNameFormatted = prediction[i].className.replace(/_/g, ' ');
+        const probabilityFormatted = (prediction[i].probability * 100).toFixed(2);
+        
+        predictionDiv.innerHTML = `
+            <strong>${classNameFormatted}</strong>: ${probabilityFormatted}%
+            ${barHTML}
+        `;
         
         labelContainer.appendChild(predictionDiv);
     }
 }
 
-// Ya no es necesario window.addEventListener("load", init) porque usamos el botón.
-// La función `init` se llama directamente desde el botón en el HTML.
-
+// ⭐ ADAPTACIÓN CLAVE: Inicia la aplicación automáticamente al cargar
+window.addEventListener("load", init);
