@@ -1,25 +1,92 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clasificador de Tipo de Rostro</title>
-    <link rel="stylesheet" href="estilo.css"> 
-</head>
-<body>
-    <h1>Clasificador de Tipo de Rostro</h1>
-    <p>Coloca tu rostro frente a la cámara para analizarlo.</p>
-    
-    <button type="button" onclick="init()">Iniciar Clasificación</button>
-    
-    <div id="container">
-        <div id="webcam-container"></div>
-        <div id="label-container"></div>
-    </div>
+// scriptt.js
+// ⚠️ CORRECCIÓN CLAVE: Usamos la ruta relativa para evitar problemas en GitHub Pages.
+// Esto asume que 'scriptt.js' está en la raíz y 'mi modelo imagen' es un subdirectorio.
+const modelURL = "./mi modelo imagen/model.json";
+const metadataURL = "./mi modelo imagen/metadata.json";
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachable-machine-image.min.js"></script>
+// Variables globales
+let model, webcam, labelContainer, maxPredictions;
+
+// Anchura y altura deseadas para la webcam (debe coincidir con el entrenamiento del modelo)
+const flip = true; 
+const width = 400;
+const height = 400;
+
+// Función principal asíncrona para iniciar todo
+async function init() {
+    // Referencia al contenedor de la webcam y las etiquetas
+    const webcamContainer = document.getElementById("webcam-container");
+    labelContainer = document.getElementById("label-container"); 
     
-    <script src="scriptt.js"></script> 
-</body>
-</html>
+    // Deshabilita el botón para evitar que el usuario haga doble clic
+    const initButton = document.querySelector('button[onclick="init()"]');
+    if (initButton) {
+        initButton.disabled = true;
+        initButton.innerText = "Cargando modelo...";
+    }
+
+    try {
+        // Cargar el modelo
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Configurar la webcam
+        webcam = new tmImage.Webcam(width, height, flip); 
+        await webcam.setup(); // Solicita acceso a la cámara
+        await webcam.play();
+        
+        // Agregar el elemento de video de la webcam al contenedor
+        webcamContainer.appendChild(webcam.canvas);
+        
+        // Crea los elementos de texto iniciales para las clases
+        for (let i = 0; i < maxPredictions; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+        
+        // Cambia el texto del botón
+        if (initButton) {
+             initButton.innerText = "Clasificación Iniciada";
+        }
+
+        // Iniciar el ciclo de predicción continua
+        window.requestAnimationFrame(loop);
+
+    } catch (e) {
+        console.error("Error al cargar el modelo o la webcam:", e);
+        // Muestra un mensaje de error si no se pudo cargar el modelo o la cámara
+        if (labelContainer) {
+            labelContainer.innerHTML = "<h3>⚠️ Error: No se pudo cargar el modelo.</h3><p>Verifica que la carpeta 'mi modelo imagen' y sus archivos estén en el lugar correcto y que diste permiso de cámara.</p>";
+        }
+    }
+}
+
+// Bucle de predicción continua
+async function loop() {
+    webcam.update(); // Captura el nuevo cuadro de la cámara
+    await predict();
+    window.requestAnimationFrame(loop); // Pide el siguiente ciclo
+}
+
+// Función para hacer la predicción y actualizar la interfaz
+async function predict() {
+    // Predice usando la imagen actual de la webcam
+    const prediction = await model.predict(webcam.canvas);
+    
+    // Limpia el contenedor de etiquetas
+    labelContainer.innerHTML = ''; 
+
+    // Muestra los resultados de la predicción
+    for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2) * 100 + "%";
+        
+        // Crea una barra de progreso visual 
+        const barWidth = (prediction[i].probability * 100) + '%';
+        const barHTML = `<div style="background-color: #4A90E2; height: 20px; width: ${barWidth}; margin-top: 5px;"></div>`;
+
+        const predictionDiv = document.createElement("div");
+        predictionDiv.className = 'prediction';
+        predictionDiv.innerHTML = `<strong>${prediction[i].className.replace(/_/g, ' ')}:</strong> ${(prediction[i].probability * 100).toFixed(2)}% ${barHTML}`;
+        
+        labelContainer.appendChild(predictionDiv);
+    }
+}
