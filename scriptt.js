@@ -1,31 +1,29 @@
-// CORRECCIÓN CLAVE: Usamos la ruta absoluta que funciona en tu GitHub Pages.
-// DEBES verificar que el nombre del repositorio 'big-data' y la carpeta 'mi modelo imagen'
-// coincidan EXACTAMENTE (mayúsculas/minúsculas) con tu repositorio.
-const modelURL = "/big-data/mi modelo imagen/model.json";
-const metadataURL = "/big-data/mi modelo imagen/metadata.json";
+// CORRECCIÓN AQUÍ:
+// Usamos la ruta completa "/nombre-repositorio/carpeta/archivo"
+// Esto asegura que GitHub Pages encuentre los archivos sin importar dónde esté el script.
+const modelURL = "/big-data/model/model.json";
+const metadataURL = "/big-data/model/metadata.json";
 
 let model, webcam, labelContainer, maxPredictions;
 
 async function init() {
     const webcamContainer = document.getElementById("webcam-container");
-    // Tu HTML (index.html) usa el ID 'label-container' para mostrar resultados
-    labelContainer = document.getElementById("label-container"); 
+    labelContainer = document.getElementById("label");
 
     try {
+        // Añadimos logs para verificar que las rutas se están construyendo bien antes de cargar
         console.log("Intentando cargar modelo desde:", modelURL);
         
-        // Cargar el modelo
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
 
         const flip = true;
-        // La resolución es de 400x400 en tu CSS, así que la ajustamos aquí:
-        webcam = new tmImage.Webcam(400, 400, flip); 
+        webcam = new tmImage.Webcam(400, 300, flip);
         await webcam.setup();
         await webcam.play();
         window.requestAnimationFrame(loop);
 
-        // Limpiamos el contenedor (aunque solo deberíamos llamar a init una vez)
+        // Limpiamos el contenedor antes de añadir (buena práctica por si init se llama dos veces)
         if (webcamContainer.hasChildNodes()) {
             webcamContainer.innerHTML = "";
         }
@@ -33,48 +31,42 @@ async function init() {
         
     } catch (e) {
         console.error("Error crítico al iniciar:", e);
-        // Usamos el mensaje de error de tu interfaz original
-        labelContainer.innerHTML = `<h3>⚠️ Error: No se pudo cargar el modelo.</h3><p>Revisa que la carpeta "mi modelo imagen" exista en tu GitHub y contenga model.json</p>`;
+        // Esto mostrará el error en la pantalla para que lo veas sin abrir la consola
+        labelContainer.innerHTML = `<span style="color:red">Error: No se pudo cargar el modelo.<br>Revisa que la carpeta "model" exista en tu GitHub y contenga model.json</span>`;
     }
 }
 
 async function loop() {
-    // Si la cámara falló en init, evitamos errores aquí
-    if (!webcam) return; 
     webcam.update();
     await predict();
     window.requestAnimationFrame(loop);
 }
 
 async function predict() {
+    // Verificamos que el modelo exista antes de predecir para evitar errores si la carga falló
     if (!model) return;
 
     const prediction = await model.predict(webcam.canvas);
-    
-    // Tu código original usaba highestProb, el código de la webcam usa un bucle for (como la versión anterior).
-    // Usaremos el código más limpio de la versión anterior que te di (con las barras) para mostrar todos los resultados.
-    
-    // Limpia el contenedor de etiquetas
-    labelContainer.innerHTML = ''; 
 
-    // Muestra los resultados de la predicción (usando barras)
+    let highestProb = 0;
+    let bestClass = "";
+
     for (let i = 0; i < maxPredictions; i++) {
-        const barWidth = (prediction[i].probability * 100) + '%';
-        const barHTML = `<div style="background-color: #4A90E2; height: 20px; width: ${barWidth}; margin-top: 5px;"></div>`;
-
-        const predictionDiv = document.createElement("div");
-        predictionDiv.className = 'prediction';
-        const classNameFormatted = prediction[i].className.replace(/_/g, ' ');
-        const probabilityFormatted = (prediction[i].probability * 100).toFixed(2);
-        
-        predictionDiv.innerHTML = `
-            <strong>${classNameFormatted}</strong>: ${probabilityFormatted}%
-            ${barHTML}
-        `;
-        
-        labelContainer.appendChild(predictionDiv);
+        if (prediction[i].probability > highestProb) {
+            highestProb = prediction[i].probability;
+            bestClass = prediction[i].className;
+        }
     }
+
+    // Formateo del texto
+    const formatted = bestClass.replace(/_/g, " ");
+    
+    // Verificamos que los elementos existan en el HTML antes de escribir
+    const labelEl = document.getElementById("label");
+    const confEl = document.getElementById("confidence");
+    
+    if (labelEl) labelEl.innerHTML = `Estilo: <strong>${formatted}</strong>`;
+    if (confEl) confEl.innerHTML = `Confianza: ${(highestProb * 100).toFixed(2)}%`;
 }
 
-// ⭐ ADAPTACIÓN CLAVE: Inicia la aplicación automáticamente al cargar
 window.addEventListener("load", init);
