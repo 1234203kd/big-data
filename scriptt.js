@@ -1,8 +1,8 @@
 // CORRECCIÓN AQUÍ:
 // Usamos la ruta completa "/nombre-repositorio/carpeta/archivo"
 // Esto asegura que GitHub Pages encuentre los archivos sin importar dónde esté el script.
-const modelURL = "/big-data/model/model.json";
-const metadataURL = "/big-data/model/metadata.json";
+const modelURL = "/big-data/mi modelo imagen/model.json";
+const metadataURL = "/big-data/mi modelo imagen/metadata.json";
 
 let model, webcam, labelContainer, maxPredictions;
 
@@ -70,3 +70,4 @@ async function predict() {
 }
 
 window.addEventListener("load", init);
+
