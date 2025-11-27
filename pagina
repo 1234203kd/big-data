@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clasificador de Tipo de Rostro</title>
     <!-- Este enlace funciona si style.css está en la misma carpeta -->
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="estilo.css"> 
 </head>
 <body>
     <h1>Clasificador de Tipo de Rostro</h1>
