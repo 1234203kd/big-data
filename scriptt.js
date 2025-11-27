@@ -1,5 +1,5 @@
-// CORRECCIÓN AQUÍ:
-// Usamos la ruta completa "/nombre-repositorio/carpeta/archivo"
+// Usamos la ruta absoluta (incluyendo el nombre del repositorio) para ser explícitos.
+// Esto asume que el nombre de tu repositorio es 'big-data'.
 const modelURL = "/big-data/mimodoimagen/model.json";
 const metadataURL = "/big-data/mimodoimagen/metadata.json";
 
@@ -7,44 +7,44 @@ let model, webcam, labelContainer, maxPredictions;
 
 async function init() {
     const webcamContainer = document.getElementById("webcam-container");
-    // CORRECCIÓN 1: Apuntar al ID correcto del contenedor de resultados.
+    // CORRECCIÓN FINAL: Apuntamos al ID correcto del contenedor de resultados.
     labelContainer = document.getElementById("label-container"); 
 
     try {
         console.log("Intentando cargar modelo desde:", modelURL);
         
+        // 1. Cargar el modelo
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
 
-        // CORRECCIÓN 2: Ajustar el tamaño de la webcam a 400x400
-        // para que coincida con el estilo.css y evitar problemas de visualización.
+        // 2. Configurar la webcam
+        // El tamaño (400x400) coincide con el estilo.css
         const flip = true;
-        webcam = new tmImage.Webcam(400, 400, flip); // 
+        webcam = new tmImage.Webcam(400, 400, flip); 
         await webcam.setup();
         await webcam.play();
         window.requestAnimationFrame(loop);
 
-        // Limpiamos el contenedor antes de añadir
+        // 3. Añadir el canvas al contenedor
         if (webcamContainer.hasChildNodes()) {
             webcamContainer.innerHTML = "";
         }
         webcamContainer.appendChild(webcam.canvas);
         
-        // CORRECCIÓN 3: Crear dinámicamente los elementos HTML para las predicciones
-        // (ya que no existen en index.html)
+        // 4. Crear dinámicamente el HTML para las predicciones
         for (let i = 0; i < maxPredictions; i++) {
             const predictionEl = document.createElement("div");
             predictionEl.classList.add("prediction");
             
-            // Creamos los IDs únicos que 'predict()' actualizará
+            // Creamos los IDs únicos que 'predict()' actualizarán
             predictionEl.innerHTML = `<span id="label-${i}">Cargando clase...</span><div id="bar-${i}"></div>`;
             labelContainer.appendChild(predictionEl);
         }
         
     } catch (e) {
         console.error("Error crítico al iniciar:", e);
-        // Mostrar el error en la pantalla si el modelo no carga
-        labelContainer.innerHTML = `<span style="color:red">Error: No se pudo cargar el modelo.<br>Revisa la ruta y que los archivos existan.</span>`;
+        // Mostrar error con más detalle.
+        labelContainer.innerHTML = `<span style="color:red">Error: No se pudo cargar el modelo.<br>Revisa la ruta completa y subida de archivos. (Detalle: ${e.message})</span>`;
     }
 }
 
@@ -59,7 +59,7 @@ async function predict() {
 
     const prediction = await model.predict(webcam.canvas);
 
-    // CORRECCIÓN 4: Recorrer todas las predicciones y actualizar el HTML dinámico
+    // Recorrer todas las predicciones y actualizar el HTML dinámico
     for (let i = 0; i < maxPredictions; i++) {
         const probability = prediction[i].probability;
         
@@ -83,6 +83,3 @@ async function predict() {
 }
 
 window.addEventListener("load", init);
-
-
-
