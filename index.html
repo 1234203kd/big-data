@@ -3,23 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clasificador de Tipo de Rostro</title>
-    <link rel="stylesheet" href="estilo.css"> 
-    
+    <title>¿Cuál es tu estilo?</title>
+    <link rel="stylesheet" href="estilo.css">
+    <!-- Importamos TensorFlow.js y la librería de Teachable Machine -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachable-machine-image.min.js"></script>
-
-    <script src="scriptt.js" defer></script> 
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
-    <h1>Clasificador de Tipo de Rostro</h1>
-    <p>Coloca tu rostro frente a la cámara para analizarlo.</p>
-    
-    <div id="container">
-        <div id="webcam-container"></div> 
-        
-        <div id="label-container"></div> 
-    </div>
 
-    </body>
+    <header>
+        <h1>👔✨ ¿Cuál es tu tipo de rostro? ✨👗</h1>
+        <p>La cámara te analizará y te dirá qué estilo vistes hoy.</p>
+    </header>
+
+    <main>
+        <section id="webcam-container">
+            <!-- El video de la webcam aparecerá aquí -->
+        </section>
+
+        <section id="results-container">
+            <div id="label">Estilo: </div>
+            <div id="confidence">Confianza: </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Creado con ❤️ y Teachable Machine</p>
+    </footer>
+
+    <!-- Cargamos nuestro script al final para que el HTML se cargue primero -->
+    <script src="scriptt.js"></script>
+</body>
 </html>
