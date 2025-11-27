@@ -1,6 +1,6 @@
 // URL donde se encuentra el modelo y metadatos
-const modelURL = "./mi modelo imagen/model.json";
-const metadataURL = "./mi modelo imagen/metadata.json";
+const modelURL = "/big-data/mi modelo imagen/model.json";
+const metadataURL = "/big-data/mi modelo imagen/metadata.json";
 
 // Variables globales
 let model, webcam, labelContainer, maxPredictions;
@@ -79,3 +79,4 @@ async function predict() {
 
 // Ya no es necesario window.addEventListener("load", init) porque usamos el botón.
 // La función `init` se llama directamente desde el botón en el HTML.
+
