@@ -1,7 +1,7 @@
 // CORRECCIÓN AQUÍ:
 // Usamos la ruta completa "/nombre-repositorio/carpeta/archivo"
-const modelURL = "mimodoimagen/model.json"; 
-const metadataURL = "mimodoimagen/metadata.json";
+const modelURL = "/big-data/mimodoimagen/model.json";
+const metadataURL = "/big-data/mimodoimagen/metadata.json";
 
 let model, webcam, labelContainer, maxPredictions;
 
@@ -83,5 +83,6 @@ async function predict() {
 }
 
 window.addEventListener("load", init);
+
 
 
