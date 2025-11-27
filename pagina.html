@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clasificador de Tipo de Rostro</title>
-    <!-- Este enlace funciona si style.css está en la misma carpeta -->
     <link rel="stylesheet" href="estilo.css"> 
 </head>
 <body>
     <h1>Clasificador de Tipo de Rostro</h1>
     <p>Coloca tu rostro frente a la cámara para analizarlo.</p>
+    
+    <button type="button" onclick="init()">Iniciar Clasificación</button>
     
     <div id="container">
         <div id="webcam-container"></div>
@@ -19,7 +20,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachable-machine-image.min.js"></script>
     
-    <!-- Este enlace funciona si script.js está en la misma carpeta -->
     <script src="scriptt.js"></script> 
 </body>
 </html>
