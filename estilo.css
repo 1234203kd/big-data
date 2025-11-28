@@ -1,8 +1,17 @@
+/* 1. IMPORTAR LA FUENTE 'QUICKSAND' (TIPO DE LETRA TIERNA) */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+/* Paleta de colores rosa:
+   Fondo Claro: #FBE4E7 (Rosa Pastel)
+   Acento/Botón: #FF69B4 (Rosa Maquillaje)
+   Texto Oscuro: #A05263 (Rosa Viejo/Maroon)
+*/
+
 body {
     /* Estilos base */
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
+    font-family: 'Quicksand', sans-serif; /* <-- Fuente Tierna */
+    background-color: #FBE4E7; /* <-- Fondo Rosa */
+    color: #A05263; /* <-- Texto Rosa Oscuro */
 
     /* Centrado */
     display: flex;
@@ -14,76 +23,94 @@ body {
 }
 
 h1 {
-    color: #4A90E2;
+    font-size: 2.5em;
+    color: #E84F7C; /* <-- Título Rosa Brillante */
+    text-shadow: 1px 1px 4px rgba(255, 105, 180, 0.5); /* Sombra para efecto de brillo */
 }
 
 p {
     margin-bottom: 20px;
+    font-weight: 600;
 }
 
 button {
-    background-color: #4A90E2;
+    background-color: #FF69B4; /* <-- Botón Rosa 'Hot Pink' (Maquillaje) */
     color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 1.1em;
-    border-radius: 5px;
+    padding: 12px 30px;
+    font-size: 1.2em;
+    border-radius: 30px; /* Bordes suaves y redondeados */
     cursor: pointer;
     margin-bottom: 20px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Quicksand', sans-serif;
 }
 
 button:hover {
-    background-color: #3A78C5;
+    background-color: #A05263; /* <-- Hover Rosa Oscuro */
+    transform: translateY(-2px);
 }
 
 #container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px; /* Espacio entre la webcam y el contenedor de etiquetas */
+    /* Eliminación de la línea duplicada 'gap: 20px;' */
+    gap: 30px;
     margin-top: 20px;
 }
 
 #webcam-container {
     /* El contenedor ahora envuelve el canvas de la webcam */
-    border: 2px solid #4A90E2;
-    border-radius: 8px;
+    border: 5px solid #FFC0CB; /* Borde rosa claro */
+    border-radius: 20px; /* Bordes aún más redondeados */
     overflow: hidden;
-    /* Ajusta estos valores para que coincidan con la configuración en scriptt.js (400x400) */
-    width: 400px; 
+    width: 400px;
+    /* Eliminación de la línea duplicada 'width: 400px;' */
     height: 400px;
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.4); /* Brillo alrededor de la cámara */
 }
 
 /* Estilo para el contenedor de las predicciones */
 #label-container {
-    font-size: 1.1em;
-    text-align: left; /* Alineamos el texto a la izquierda para las barras */
-    width: 400px; /* Igual ancho que la webcam para un diseño limpio */
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    font-size: 1.2em;
+    /* Eliminación de la línea duplicada y corrección de alineación a la izquierda */
+    text-align: left;
+    width: 400px;
+    padding: 20px;
+    border: 1px solid #FFC0CB;
+    border-radius: 20px;
     background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* Estilo para cada línea de predicción individual */
 .prediction {
+    /* Eliminación de la línea duplicada 'margin: 5px 0;' */
     margin: 10px 0;
-    padding-bottom: 5px;
-    border-bottom: 1px dotted #ccc; /* Línea separadora */
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #FFC0CB; /* Separador punteado rosa */
 }
 
 .prediction:last-child {
-    border-bottom: none; /* Quitar la línea en el último elemento */
+    border-bottom: none;
 }
 
 /* Estilo para la barra de progreso dentro de la predicción (creada en scriptt.js) */
 .prediction div {
     /* Estilo de la barra de confianza */
-    background-color: #4A90E2;
+    background-color: #E84F7C; /* <-- Barra de progreso rosa medio */
     height: 20px;
-    border-radius: 3px;
+    border-radius: 10px;
     margin-top: 5px;
-    transition: width 0.1s ease; /* Transición suave del ancho al cambiar la predicción */
+    transition: width 0.3s ease;
+}
+
+/* ESTILO ADICIONAL PARA EL MENSAJE DE DESPEDIDA */
+.footer-message {
+    margin-top: 40px;
+    font-size: 1.3em;
+    color: #A05263;
+    font-style: italic;
 }
